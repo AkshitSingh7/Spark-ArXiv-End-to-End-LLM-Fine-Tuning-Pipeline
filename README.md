@@ -1,102 +1,186 @@
-# 🎓 Spark-ArXiv: End-to-End LLM Fine-Tuning Pipeline
-An end-to-end LLM fine-tuning pipeline using PySpark and Mistral-7B to create a domain-specific research assistant.
+# 📚 Spark-ArXiv: End-to-End LLM Fine-Tuning Pipeline
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
-![Apache Spark](https://img.shields.io/badge/Apache%20Spark-3.5-orange)
-![Hugging Face](https://img.shields.io/badge/Hugging%20Face-Transformers-yellow)
-![PEFT](https://img.shields.io/badge/PEFT-QLoRA-green)
-![License](https://img.shields.io/badge/License-MIT-lightgrey)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)
+![PySpark](https://img.shields.io/badge/PySpark-3.5-orange?logo=apachespark&logoColor=white)
+![Hugging Face](https://img.shields.io/badge/🤗%20Hugging%20Face-Transformers-yellow)
+![PyTorch](https://img.shields.io/badge/PyTorch-2.0-EE4C2C?logo=pytorch&logoColor=white)
+![Gradio](https://img.shields.io/badge/Gradio-UI-FF7C00?logo=gradio&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-**Spark-ArXiv** is a scalable machine learning pipeline that demonstrates the complete lifecycle of building a domain-specific Large Language Model (LLM). It ingests raw research papers from ArXiv using **Apache Spark**, generates synthetic training data using a Teacher-Student architecture, and fine-tunes a **Mistral-7B** model to become a subject matter expert in Computer Science research.
+> **A scalable MLOps pipeline that ingests scientific papers with PySpark, generates synthetic Q&A datasets using a Teacher LLM, and fine-tunes a specialized Student LLM (Mistral-7B) for domain-specific RAG.**
+
+---
 
 ## 🚀 Project Overview
 
-The goal of this project was to bridge the gap between **Big Data processing** and **Generative AI**. Instead of relying on generic pre-trained models, this pipeline creates a specialized "Student" model capable of answering complex technical questions based on the latest 2024 CS/ML papers.
+**Spark-ArXiv** is a comprehensive Data Engineering & LLM project designed to solve the challenge of querying dense scientific literature. Unlike simple RAG wrappers, this project implements a full lifecycle pipeline:
 
-### Key Features
-* **Scalable Data Ingestion:** Uses **PySpark** to process metadata for 2.8M+ ArXiv papers and filter for relevant Machine Learning (cs.LG) research.
-* **PDF ETL Pipeline:** Custom Spark UDFs (User Defined Functions) utilizing **PyMuPDF** to extract and clean text from raw PDF binaries at scale.
-* **Semantic Search (RAG):** Implements **FAISS** vector indexing with `sentence-transformers` for efficient retrieval of research context.
-* **Synthetic Data Factory:** A "Teacher" model (Mistral-7B-Instruct) generates high-quality, JSON-formatted Q&A pairs from raw text chunks.
-* **Efficient Fine-Tuning:** Uses **QLoRA** (Quantized Low-Rank Adaptation) to fine-tune a 4-bit quantized model on a single T4 GPU.
-* **Interactive UI:** A **Gradio** chat interface to interact with the fine-tuned model in real-time.
+1.  **Big Data Ingestion:** Uses **Apache Spark** to process and OCR raw PDF research papers from ArXiv.
+2.  **Vector Search:** Builds a semantic search engine using **FAISS** and Sentence Transformers.
+3.  **Synthetic Data Factory:** Uses a "Teacher" model (Mistral-7B) to autonomously generate high-quality Q&A pairs from the processed text.
+4.  **Fine-Tuning:** Trains a domain-specific "Student" model using **QLoRA** on the synthetic dataset.
+5.  **Deployment:** Exposes the final model via a **Gradio** chat interface.
 
-## 🛠️ Tech Stack
+---
 
-* **Data Processing:** Apache Spark (PySpark), Pandas
-* **LLMs & Training:** Hugging Face Transformers, `trl` (Transformer Reinforcement Learning), `peft`, `bitsandbytes`
-* **Vector Database:** FAISS, Sentence-Transformers
-* **Infrastructure:** Google Colab (T4 GPU), Google Drive Integration
-* **Visualization/UI:** Gradio, Tqdm
+## 🏗️ Architecture
 
-## 🏗️ Architecture Pipeline
+The pipeline is divided into two major phases:
 
-1.  **Ingestion:** Download filtered ArXiv metadata (JSON) and PDFs using the Kaggle API.
-2.  **Processing:** * Load PDF binaries into Spark DataFrames.
-    * Extract text -> Clean -> Chunk into 1000-character segments.
-3.  **Embedding:** Generate embeddings for 80,000+ chunks and build a FAISS index.
-4.  **Generation (Teacher):** * Prompt Mistral-7B to act as a "Research Assistant".
-    * Generate `{"question": "...", "answer": "..."}` pairs from text chunks.
-    * *Technique used:* One-shot prompting with `json_repair` for robustness.
-5.  **Fine-Tuning (Student):** * Train a new LoRA adapter on the synthetic dataset.
-    * Optimization: 4-bit quantization (NF4) and Paged AdamW.
-6.  **Inference:** Merge adapter weights and serve via Gradio.
+### Phase 1: Data Engineering & RAG
+* **Source:** ArXiv Metadata (Kaggle) & PDF API.
+* **Processing:** PySpark for parallel OCR (PyMuPDF) and Chunking (LangChain).
+* **Storage:** Parquet (Metadata) + FAISS (Vector Index).
 
-## 💻 Installation & Usage
+### Phase 2: LLM Fine-Tuning & Application
+* **Generation:** Mistral-7B generates `(Question, Answer, Context)` triplets.
+* **Training:** QLoRA Fine-tuning (4-bit quantization) on the synthetic dataset.
+* **Inference:** Retrieval-Augmented Generation (RAG) merging vector search with the fine-tuned model.
 
-Since this project relies on GPU acceleration and high-memory Spark sessions, it is optimized for **Google Colab**.
+---
 
-### Prerequisites
-* Google Account (for Colab & Drive)
-* Hugging Face Access Token
-* Kaggle API Key (`kaggle.json`)
+## 📂 Repository Structure
 
-### Step-by-Step Run Guide
+```text
+Spark-ArXiv-RAG/
+│
+├── 📂 data/                   # Local data storage (GitIgnored)
+│   ├── raw_pdfs/              # Downloaded papers
+│   └── processed/             # Parquet files & FAISS indices
+│
+├── 📂 src/                    # Source Code
+│   ├── config.py              # Central configuration & paths
+│   ├── data_ingestion.py      # Kaggle API & PDF downloads
+│   ├── text_processor.py      # PySpark OCR & Text Chunking
+│   ├── vector_store.py        # Embedding generation & FAISS indexing
+│   ├── synthetic_data.py      # "Teacher" model Q&A generation
+│   ├── trainer.py             # QLoRA Fine-tuning script
+│   └── app.py                 # Gradio Chat Interface
+│
+├── requirements.txt           # Project dependencies
+└── README.md                  # Project documentation
 
-1.  **Clone the Repository**
-    ```bash
-    git clone [https://github.com/yourusername/spark-arxiv-llm.git](https://github.com/yourusername/spark-arxiv-llm.git)
-    ```
+```
 
-2.  **Setup Environment (Colab)**
-    Open the notebook `Spark_ArXiv_Pipeline.ipynb` in Google Colab. Ensure the runtime is set to **T4 GPU**.
+---
 
-3.  **Install Dependencies**
-    The notebook automatically handles library installation:
-    ```python
-    !pip install pyspark kaggle arxiv pymupdf transformers peft bitsandbytes trl gradio json_repair
-    ```
+## 🛠️ Installation
 
-4.  **Run the Pipeline**
-    * **Phase 1:** Execute Spark cells to ingest PDFs and create `embeddings.parquet`.
-    * **Phase 2:** Run the Teacher model loop to generate `synthetic_dataset.json`.
-    * **Phase 3:** Execute the SFTTrainer to fine-tune the model.
+1. **Clone the repository:**
+```bash
+git clone [https://github.com/yourusername/Spark-ArXiv.git](https://github.com/yourusername/Spark-ArXiv.git)
+cd Spark-ArXiv
 
-5.  **Chat with your Model**
-    The final cell launches a public Gradio link:
-    ```python
-    demo.launch(share=True)
-    ```
+```
 
-## 📊 Results
 
-* **Data Processed:** ~1,000 PDFs converted to 87,000+ text chunks.
-* **Training Efficiency:** Fine-tuning 200 high-quality samples took <10 minutes on T4 GPU.
-* **Output Quality:** The Student model successfully learned to adopt the domain-specific jargon and answering style of the source text, outperforming the base model in specific context retrieval tasks.
+2. **Create a virtual environment:**
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+```
+
+
+3. **Install dependencies:**
+```bash
+pip install -r requirements.txt
+
+```
+
+
+4. **Kaggle Setup:**
+* Place your `kaggle.json` API key in the root directory (or `~/.kaggle/`).
+* The ingestion script handles authentication automatically.
+
+
+
+---
+
+## 💻 Usage Guide
+
+### 1. Run the Data Pipeline
+
+Download ArXiv metadata and PDFs, then process them with Spark.
+
+```bash
+python src/data_ingestion.py
+# Followed by processing
+python src/text_processor.py
+
+```
+
+### 2. Build Vector Index
+
+Convert processed text chunks into vector embeddings.
+
+```bash
+python src/vector_store.py
+
+```
+
+### 3. Generate Synthetic Training Data
+
+Use the "Teacher" model to create a Q&A dataset from your specific papers.
+
+```bash
+python src/synthetic_data.py
+
+```
+
+*Output: `data/synthetic_arxiv_qa_dataset.json*`
+
+### 4. Fine-Tune the Model
+
+Train the "Student" model (Mistral-7B) on your synthetic data.
+
+```bash
+python src/trainer.py
+
+```
+
+*Output: `models/final_adapter/*`
+
+### 5. Launch the App
+
+Start the Chat UI to query your papers.
+
+```bash
+python src/app.py
+
+```
+
+---
+
+## 📊 Performance & Tech Stack
+
+| Component | Technology | Description |
+| --- | --- | --- |
+| **Orchestration** | Apache Spark | Handles massive PDF processing & OCR at scale. |
+| **Embeddings** | `all-MiniLM-L6-v2` | Fast, high-quality sentence embeddings. |
+| **Vector DB** | FAISS (CPU) | Efficient similarity search for RAG. |
+| **LLM (Base)** | Mistral-7B-v0.1 | State-of-the-art 7B parameter model. |
+| **Training** | QLoRA + PEFT | Parameter-Efficient Fine-Tuning on consumer GPUs. |
+| **UI** | Gradio | Interactive web interface for model testing. |
+
+---
 
 ## 🔮 Future Improvements
 
-* **Scale Up:** Run the generation loop on the full 87k chunk dataset (requires multi-GPU setup).
-* **Evaluation:** Implement RAGAS (RAG Assessment) scores to quantitatively measure Hallucination and Answer Relevance.
-* **Deployment:** Containerize the merged model using Docker for deployment on AWS SageMaker or EC2.
+* [ ] **Hybrid Search:** Combine BM25 keyword search with FAISS vector search.
+* [ ] **Multi-Modal:** Add support for extracting and interpreting charts/images from papers.
+* [ ] **Evaluation:** Implement RAGAS metrics to score retrieval accuracy.
+
+---
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](issues/).
+Contributions are welcome! Please open an issue or submit a pull request for any improvements.
 
-## 📝 License
+## 📜 License
 
-This project is [MIT](LICENSE) licensed.
+This project is licensed under the MIT License.
 
----
-*Created by [Your Name]*
+```
+
+```
