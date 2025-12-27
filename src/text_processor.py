@@ -38,7 +38,7 @@ extract_text_udf = udf(extract_text_from_pdf, StringType())
 chunk_text_udf = udf(chunk_text, ArrayType(StringType()))
 
 def process_data(spark, metadata_path):
-    # Load JSON metadata
+ 
     df = spark.read.json(metadata_path)
     
     # Filter for CS category (as per your notebook)
