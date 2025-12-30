@@ -42,7 +42,7 @@ The pipeline is divided into two major phases:
 ## 📂 Repository Structure
 
 ```text
-Spark-ArXiv-RAG/
+Spark-ArXiv-End-to-End-LLM-Fine-Tuning-Pipeline/
 │
 ├── 📂 data/                   # Local data storage (GitIgnored)
 │   ├── raw_pdfs/              # Downloaded papers
