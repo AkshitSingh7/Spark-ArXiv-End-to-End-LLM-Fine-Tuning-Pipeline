@@ -44,7 +44,7 @@ The pipeline is divided into two major phases:
 ```text
 Spark-ArXiv-End-to-End-LLM-Fine-Tuning-Pipeline/
 │
-├── 📂 data/                   # Local data storage (GitIgnored)
+├── 📂 data/                   # Local data storage 
 │   ├── raw_pdfs/              # Downloaded papers
 │   └── processed/             # Parquet files & FAISS indices
 │
