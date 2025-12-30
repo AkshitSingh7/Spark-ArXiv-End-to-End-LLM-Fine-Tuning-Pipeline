@@ -68,7 +68,7 @@ Spark-ArXiv-RAG/
 
 1. **Clone the repository:**
 ```bash
-git clone [https://github.com/yourusername/Spark-ArXiv.git](https://github.com/yourusername/Spark-ArXiv.git)
+git clone [https://github.com/AkshitSingh7/Spark-ArXiv.git](https://github.com/AkshitSingh7/Spark-ArXiv.git)
 cd Spark-ArXiv
 
 ```
