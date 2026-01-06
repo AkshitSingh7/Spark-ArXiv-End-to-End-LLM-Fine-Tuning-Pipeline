@@ -44,11 +44,11 @@ The pipeline is divided into two major phases:
 ```text
 Spark-ArXiv-End-to-End-LLM-Fine-Tuning-Pipeline/
 │
-├── 📂 data/                   # Local data storage 
+├── 📂 data/                   
 │   ├── raw_pdfs/              # Downloaded papers
 │   └── processed/             # Parquet files & FAISS indices
 │
-├── 📂 src/                    # Source Code
+├── 📂 src/                   
 │   ├── config.py              # Central configuration & paths
 │   ├── data_ingestion.py      # Kaggle API & PDF downloads
 │   ├── text_processor.py      # PySpark OCR & Text Chunking
