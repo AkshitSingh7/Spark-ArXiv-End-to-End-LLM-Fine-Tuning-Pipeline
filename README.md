@@ -45,7 +45,7 @@ The pipeline is divided into two major phases:
 Spark-ArXiv-End-to-End-LLM-Fine-Tuning-Pipeline/
 │
 ├── 📂 data/                   
-│   ├── raw_pdfs/              # Downloaded papers
+│   ├── raw_pdfs/              
 │   └── processed/             # Parquet files & FAISS indices
 │
 ├── 📂 src/                   
@@ -57,8 +57,8 @@ Spark-ArXiv-End-to-End-LLM-Fine-Tuning-Pipeline/
 │   ├── trainer.py             # QLoRA Fine-tuning script
 │   └── app.py                 # Gradio Chat Interface
 │
-├── requirements.txt           # Project dependencies
-└── README.md                  # Project documentation
+├── requirements.txt          
+└── README.md                  
 
 ```
 
