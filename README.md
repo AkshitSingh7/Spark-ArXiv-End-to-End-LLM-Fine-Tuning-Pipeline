@@ -7,7 +7,7 @@
 ![Gradio](https://img.shields.io/badge/Gradio-UI-FF7C00?logo=gradio&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-> **A scalable MLOps pipeline that ingests scientific papers with PySpark, generates synthetic Q&A datasets using a Teacher LLM, and fine-tunes a specialized Student LLM (Mistral-7B) for domain-specific RAG.**
+> **A scalable pipeline that ingests scientific papers with PySpark, generates synthetic Q&A datasets using a Teacher LLM, and fine-tunes a specialized Student LLM (Mistral-7B) for domain-specific RAG.**
 
 ---
 
